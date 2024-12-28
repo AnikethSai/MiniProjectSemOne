@@ -1,3 +1,5 @@
+#payer: expen[i]['payer']
+
 peo =[]
 p1={}
 n=int(input('Enter the number of people '))
@@ -22,18 +24,32 @@ def dataSheet():
 def expenses():
     n=int(input('Enter the number of expenses: '))
     for i in range(n):
+        global exp
         exp=input('Enter the name of the expense: ')
         expamt=int(input('Enter the expense amount: '))
         payer=input('Enter the payer\'s name: ')
         expen[exp] = {'amount': expamt, 'payer': payer}
+        global expenses
+        expenses=list(expen.keys())
         #print(expen)
         #exppay[exp]=payer
     print(expen)
    # print(exppay)
+
+def split():
+    for i in expenses:
+        part=expen[i]['amount']/n 
+        global p1k
+        p1k = list(p1[expen[i]['payer']].keys())
+        p1[expen[i]['payer']][p1k[0]]=part
         
+        print('Final: ',expen)        
+        print(part)
+
 people()
 a=dataSheet()
 expenses()
+split()
 print(a)
         
         

@@ -1,4 +1,4 @@
-# payer: expen[i]['payer']
+# payer: expSheet[i]['payer']
 '''
 p1 -> stroes the main datasheet dictionary
 
@@ -18,7 +18,7 @@ def dataSheet():
         p2 = peo[:]
         p2.remove(peo[i])
         for j in range(len(p2)):
-            p1[peo[i]][p2[j]] = None
+            p1[peo[i]][p2[j]] = 0
     return p1
 def expenses():
     n1 = int(input('Enter the number of expenses: '))
@@ -27,26 +27,46 @@ def expenses():
         expname = input('Enter the name of the expense: ')
         expamt = int(input('Enter the expense amount: '))
         payer = input('Enter the payer\'s name: ')
+
+        if payer not in peo:
+            print("Invalid payer name; retry")
+            continue
+
         expSheet[expname] = {'amount': expamt, 'payer': payer}
+        print('Expenses entered: \n')
+        for k, v in expSheet.items():
+            print(f"  {k}: {v}")
         global expense
         expense = list(expSheet.keys())
-    print(expSheet)
 def split():
     for i in expense:
         part = expSheet[i]['amount']/n
-        global p1k
-        p1k = list(p1[expSheet[i]['payer']].keys())
-        for j in range(n-1):
-            p1[expSheet[i]['payer']][p1k[j]] = part
-        print('Final: ', expSheet)
-        print(part)
+        print(f"\nSplitting expense '{expname}' of amount {expSheet[i]['amount']:.2f}:")
+        payer = expSheet[i]['payer']
+        for person in peo:
+            if person != payer:
+                p1[payer][person] += part
+                p1[person][payer] -= part
+                print(f"  {person} owes {payer} {part:.2f}")
 
 
+def final_bal():
+    print("\nFinal Balances:")
+    done = set()
+    for person in peo:
+        for other in peo:
+            if person != other and (person, other) not in done:
+                net_balance = p1[person][other] - p1[other][person]
+                if net_balance > 0:
+                    print(f"{other} owes {person} {net_balance:.2f}")
+                elif net_balance < 0:
+                    print(f"{person} owes {other} {-net_balance:.2f}")
+                done.add((person, other))
 people()
 a = dataSheet()
 expenses()
 split()
+final_bal()
 print(a)
-print('p1k:',p1k)
 
 

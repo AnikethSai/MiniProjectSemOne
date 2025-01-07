@@ -8,7 +8,6 @@ def people():
         peo.append(name)
         p1[name] = {}
     return p1
-pcopy=p1
 def dataSheet():
     for i in range(n):
         p2 = peo[:]
@@ -19,7 +18,6 @@ def dataSheet():
 def expenses():
     n1 = int(input('Enter the number of expenses: '))
     for i in range(n1):
-        global expname
         expname = input('Enter the name of the expense: ')
         expamt = int(input('Enter the expense amount: '))
         payer = input('Enter the payer\'s name: ')

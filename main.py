@@ -13,6 +13,7 @@ def people():
         peo.append(name)
         p1[name] = {}
     return p1
+pcopy=p1
 def dataSheet():
     for i in range(n):
         p2 = peo[:]
@@ -55,14 +56,13 @@ def final_bal():
     done = set()
     for person in peo:
         for other in peo:
-            #
-            if person!=other:
-                '''print('p',person)
-                print('o',other)'''
-                if p1[person][other] > p1[other][person]:
-                    print(other, ' owes ',  person,' ',p1[person][other])
-                else:
-                    print(person,' owes ',other,' ',p1[other][person])
+            if person!=other and (person,other) not in done:
+                if p1[person][other] > 0:
+                    print(other, ' owes ',  person,' %.2f' %(p1[person][other]))
+                elif p1[other][person] > 0:
+                    print(person,' owes ',other,' %.2f'%(p1[other][person]))
+                done.add((person, other))
+                done.add((other, person))
 
 people()
 a = dataSheet()

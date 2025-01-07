@@ -5,6 +5,7 @@ def people(n):
         name = input('Enter name: ')
         peo.append(name)
         p1[name] = {}
+    print('\n')
     return peo,p1
 def dataSheet(peo,p1):
     for person in peo:
@@ -24,15 +25,14 @@ def expenses(peo):
         expname = input('Enter the name of the expense: ')
         expamt = int(input('Enter the expense amount: '))
         payer = input('Enter the payer\'s name: ')
-
+        print('\n')
         if payer not in peo:
             print("Invalid payer name; retry")
             continue
 
         expSheet[expname] = {'amount': expamt, 'payer': payer}
         expense_name.append(expname)
-        print('Expenses entered: \n')
-
+    print('\n')
     return expSheet,expense_name
 def print_expenses(expSheet):
     print('Expenses entered:\n')
@@ -43,8 +43,8 @@ def split(peo,p1,expSheet,expense_name):
         expamt = expSheet[i]['amount']
         payer = expSheet[i]['payer']
         split_people=[]
-        print('Splitting expense ',i,' of amount %.2f'%expamt)
-        print('Payer is ',payer,'. Who should split this expense?')
+        print('Splitting expense',i,' of amount %.2f'%expamt)
+        print('Payer is ',payer,'\nWho should split this expense?')
         split_opt=input('Enter \'all\' to split among everyone or press enter to split among specific people')
 
         if split_opt=='all':
@@ -55,6 +55,7 @@ def split(peo,p1,expSheet,expense_name):
             while True:
                 person = input('Enter a person to split the expense with (enter done to finish)').strip()
                 if person.lower() == 'done':
+                    print('\n')
                     break
                 elif person not in peo:
                     print(f"{person} is not in the list of people.")
@@ -73,7 +74,9 @@ def split(peo,p1,expSheet,expense_name):
         for person in split_people:
             p1[payer][person] += part
             p1[person][payer] -= part
-            print(f"  {person} owes {payer} {part:.2f}")
+            print(f"{person} owes {payer} {part:.2f}")
+        print('\n')
+    print('\n')
     return p1
 def final_bal(p1,peo):
     print("\nFinal Balances:")
@@ -88,9 +91,13 @@ def final_bal(p1,peo):
                 done.add((person, other))
                 done.add((other, person))
 
-n = int(input('Enter the number of people '))
-if n <= 0:
-    print("No people to process.")
+try:
+    n = int(input('Enter the number of people: '))
+    if n <= 0:
+        raise ValueError("Number of people must be a positive integer.")
+except ValueError as e:
+    print(e)
+    exit()
 else:
     peo,p1=people(n)
     p1=dataSheet(peo,p1)

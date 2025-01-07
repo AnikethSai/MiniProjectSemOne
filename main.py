@@ -1,8 +1,3 @@
-# payer: expSheet[i]['payer']
-'''
-p1 -> stroes the main datasheet dictionary
-
-'''
 peo = []
 p1 = {}
 n = int(input('Enter the number of people '))
@@ -71,17 +66,11 @@ def split():
             print(f"No valid people to split the expense. Skipping this expense.")
             continue
 
-        #print(f"\nSplitting expense '{expname}' of amount {expamt:.2f} between {', '.join(split_people)}:")
-        #payer = expSheet[i]['payer']
-        #sp = split_people[:]
-        #sp.remove(payer)
         for person in split_people:
             #if person != payer:
             p1[payer][person] += part
             p1[person][payer] -= part
             print(f"  {person} owes {payer} {part:.2f}")
-
-
 def final_bal():
     print("\nFinal Balances:")
     done = set()
@@ -96,11 +85,7 @@ def final_bal():
                 done.add((other, person))
 
 people()
-#a = dataSheet()
 dataSheet()
 expenses()
 split()
 final_bal()
-#print(a)
-
-

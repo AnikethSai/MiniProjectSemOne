@@ -41,14 +41,45 @@ def expenses():
         expense = list(expSheet.keys())
 def split():
     for i in expense:
-        part = expSheet[i]['amount']/n
-        print(f"\nSplitting expense '{expname}' of amount {expSheet[i]['amount']:.2f}:")
+        expamt = expSheet[i]['amount']
         payer = expSheet[i]['payer']
-        for person in peo:
-            if person != payer:
-                p1[payer][person] += part
-                p1[person][payer] -= part
-                print(f"  {person} owes {payer} {part:.2f}")
+        split_people=[]
+        print('Splitting expense ',i,' of amount %.2f'%expamt)
+        print('Payer is ',payer,'. Who should split this expense?')
+        split_opt=input('Enter \'all\' to split among everyone or press enter to split among specific people')
+
+        if split_opt=='all':
+            split_people=peo[:]
+            part = expamt / len(split_people)
+            split_people.remove(payer)
+        else:
+            while True:
+                person = input('Enter a person to split the expense with (enter done to finish)').strip()
+                if person.lower() == 'done':
+                    break
+                elif person not in peo:
+                    print(f"{person} is not in the list of people.")
+                elif person == payer:
+                    print(f"{person} is the payer and cannot split.")
+                elif person in split_people:
+                    print(f"{person} is already added.")
+                else:
+                    split_people.append(person)
+            part = expamt / (len(split_people) + 1)
+
+        if not split_people:
+            print(f"No valid people to split the expense. Skipping this expense.")
+            continue
+
+        #print(f"\nSplitting expense '{expname}' of amount {expamt:.2f} between {', '.join(split_people)}:")
+        #payer = expSheet[i]['payer']
+        #sp = split_people[:]
+        #sp.remove(payer)
+        for person in split_people:
+            #if person != payer:
+            p1[payer][person] += part
+            p1[person][payer] -= part
+            print(f"  {person} owes {payer} {part:.2f}")
 
 
 def final_bal():
@@ -65,10 +96,11 @@ def final_bal():
                 done.add((other, person))
 
 people()
-a = dataSheet()
+#a = dataSheet()
+dataSheet()
 expenses()
 split()
 final_bal()
-print(a)
+#print(a)
 
 

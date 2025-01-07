@@ -1,22 +1,25 @@
-peo = []
-p1 = {}
-n = int(input('Enter the number of people '))
-expSheet = {}
-def people():
+def people(n):
+    peo = []
+    p1 = {}
     for i in range(n):
         name = input('Enter name: ')
         peo.append(name)
         p1[name] = {}
+    return peo,p1
+def dataSheet(peo,p1):
+    for person in peo:
+        for other in peo:
+            if person != other:
+                p1[person][other]=0
     return p1
-def dataSheet():
-    for i in range(n):
-        p2 = peo[:]
-        p2.remove(peo[i])
-        for j in range(len(p2)):
-            p1[peo[i]][p2[j]] = 0
-    return p1
-def expenses():
+def expenses(peo):
+    expSheet = {}
+    expense_name = []
     n1 = int(input('Enter the number of expenses: '))
+    if n1 <= 0:
+        print("No expenses to process.")
+        return expSheet, expense_name
+
     for i in range(n1):
         expname = input('Enter the name of the expense: ')
         expamt = int(input('Enter the expense amount: '))
@@ -27,13 +30,16 @@ def expenses():
             continue
 
         expSheet[expname] = {'amount': expamt, 'payer': payer}
+        expense_name.append(expname)
         print('Expenses entered: \n')
-        for k, v in expSheet.items():
-            print(f"  {k}: {v}")
-        global expense
-        expense = list(expSheet.keys())
-def split():
-    for i in expense:
+
+    return expSheet,expense_name
+def print_expenses(expSheet):
+    print('Expenses entered:\n')
+    for k, v in expSheet.items():
+        print(f"  {k}: {v}")
+def split(peo,p1,expSheet,expense_name):
+    for i in expense_name:
         expamt = expSheet[i]['amount']
         payer = expSheet[i]['payer']
         split_people=[]
@@ -65,11 +71,11 @@ def split():
             continue
 
         for person in split_people:
-            #if person != payer:
             p1[payer][person] += part
             p1[person][payer] -= part
             print(f"  {person} owes {payer} {part:.2f}")
-def final_bal():
+    return p1
+def final_bal(p1,peo):
     print("\nFinal Balances:")
     done = set()
     for person in peo:
@@ -82,8 +88,13 @@ def final_bal():
                 done.add((person, other))
                 done.add((other, person))
 
-people()
-dataSheet()
-expenses()
-split()
-final_bal()
+n = int(input('Enter the number of people '))
+if n <= 0:
+    print("No people to process.")
+else:
+    peo,p1=people(n)
+    p1=dataSheet(peo,p1)
+    expSheet, expense_name = expenses(peo)
+if expense_name:
+    p1=split(peo,p1,expSheet,expense_name)
+    final_bal(p1,peo)

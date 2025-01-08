@@ -156,4 +156,7 @@ else:
 if expense_name:
     p1=split(peo,p1,expSheet,expense_name,originalNames)
     final_bal(p1,peo,originalNames)
-    save_to_file_user_input(peo, p1, expSheet, originalNames)
+    c='!'
+    c=input('Do you want to save this data in a file? Press enter to save.')
+    if c=='':
+        save_to_file_user_input(peo, p1, expSheet, originalNames)

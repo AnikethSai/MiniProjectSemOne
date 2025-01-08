@@ -108,6 +108,40 @@ def final_bal(p1,peo,originalNames):
                 done.add((person, other))
                 done.add((other, person))
 
+
+def save_to_file_user_input(peo, p1, expSheet, originalNames):
+    filepath = input('Enter the full path where the file should be saved (e.g., C:\\Users\\YourName\\Downloads): ').strip()
+    filename = input('Enter the name of the file (e.g., Expenses.txt): ').strip()
+    if not filepath.endswith("\\"):
+        filepath += "\\"
+    fullpath = filepath + filename
+
+    try:
+        with open(fullpath, 'w') as f:
+            f.write("People:\n")
+            for name in peo:
+                f.write(f"  {originalNames[name]} (equalized: {name})\n")
+
+            f.write("\nExpenses:\n")
+            for exp, details in expSheet.items():
+                f.write(f"  {exp}: {details['amount']} paid by {originalNames[details['payer']]}\n")
+
+            f.write("\nFinal Balances:\n")
+            done = set()
+            for person in peo:
+                for other in peo:
+                    if person != other and (person, other) not in done:
+                        if p1[person][other] > 0:
+                            f.write(f"  {originalNames[other]} owes {originalNames[person]}: {p1[person][other]:.2f}\n")
+                        elif p1[other][person] > 0:
+                            f.write(f"  {originalNames[person]} owes {originalNames[other]}: {p1[other][person]:.2f}\n")
+                        done.add((person, other))
+                        done.add((other, person))
+        print(f"Data successfully saved to {fullpath}")
+    except Exception as e:
+        print(f"An error occurred while saving the file: {e}")
+
+
 try:
     n = validInput('Enter the number of people: ')
     if n <= 0:
@@ -122,3 +156,4 @@ else:
 if expense_name:
     p1=split(peo,p1,expSheet,expense_name,originalNames)
     final_bal(p1,peo,originalNames)
+    save_to_file_user_input(peo, p1, expSheet, originalNames)

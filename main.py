@@ -1,4 +1,3 @@
-#Upper case/lower case
 def validInput(message):
     while True:
         try:
@@ -9,34 +8,37 @@ def validInput(message):
                 print("Please enter a positive integer")
         except ValueError:
             print("Invalid input. Please enter a positive integer")
+
 def people(n):
     peo = []
+    originalNames={}
     p1 = {}
     for i in range(n):
         name = input('Enter name: ')
-        peo.append(name)
-        p1[name] = {}
+        name1=name.lower()
+        peo.append(name1)
+        originalNames[name1]=name
+        p1[name1] = {}
     print('\n')
-    return peo,p1
+    return peo,p1,originalNames
+
 def dataSheet(peo,p1):
     for person in peo:
         for other in peo:
             if person != other:
                 p1[person][other]=0
     return p1
+
 def expenses(peo):
     expSheet = {}
     expense_name = []
     n1 = validInput('Enter the number of expenses: ')
-    if n1 <= 0:
-        print("No expenses to process.")
-        return expSheet, expense_name
 
     for i in range(n1):
         expname = input('Enter the name of the expense: ')
         expamt = validInput('Enter the expense amount: ')
         while True:
-            payer = input('Enter the payer\'s name: ')
+            payer = input('Enter the payer\'s name: ').lower()
             if payer in peo:
                 break
             else:
@@ -47,11 +49,13 @@ def expenses(peo):
         expense_name.append(expname)
     print('\n')
     return expSheet,expense_name
+
 def print_expenses(expSheet):
     print('Expenses entered:\n')
     for k, v in expSheet.items():
         print(f"  {k}: {v}")
-def split(peo,p1,expSheet,expense_name):
+
+def split(peo,p1,expSheet,expense_name,originalNames):
     for i in expense_name:
         expamt = expSheet[i]['amount']
         payer = expSheet[i]['payer']
@@ -66,8 +70,8 @@ def split(peo,p1,expSheet,expense_name):
             split_people.remove(payer)
         else:
             while True:
-                person = input('Enter a person to split the expense with (enter done to finish)').strip()
-                if person.lower() == 'done':
+                person = input('Enter a person to split the expense with (Press enter to finish/move to next person)').lower()
+                if person.lower() == '':
                     print('\n')
                     break
                 elif person not in peo:
@@ -87,20 +91,20 @@ def split(peo,p1,expSheet,expense_name):
         for person in split_people:
             p1[payer][person] += part
             p1[person][payer] -= part
-            print(f"{person} owes {payer} {part:.2f}")
+            print(f"{originalNames[person]} owes {originalNames[payer]} {part:.2f}")
         print('\n')
     print('\n')
     return p1
-def final_bal(p1,peo):
+def final_bal(p1,peo,originalNames):
     print("\nFinal Balances:")
     done = set()
     for person in peo:
         for other in peo:
             if person!=other and (person,other) not in done:
                 if p1[person][other] > 0:
-                    print(other, ' owes ',  person,' %.2f' %(p1[person][other]))
+                    print(originalNames[other], ' owes ', originalNames[person],' %.2f' %(p1[person][other]))
                 elif p1[other][person] > 0:
-                    print(person,' owes ',other,' %.2f'%(p1[other][person]))
+                    print(originalNames[person],' owes ',originalNames[other],' %.2f'%(p1[other][person]))
                 done.add((person, other))
                 done.add((other, person))
 
@@ -112,9 +116,9 @@ except ValueError as e:
     print(e)
     exit()
 else:
-    peo,p1=people(n)
+    peo,p1,originalNames=people(n)
     p1=dataSheet(peo,p1)
     expSheet, expense_name = expenses(peo)
 if expense_name:
-    p1=split(peo,p1,expSheet,expense_name)
-    final_bal(p1,peo)
+    p1=split(peo,p1,expSheet,expense_name,originalNames)
+    final_bal(p1,peo,originalNames)

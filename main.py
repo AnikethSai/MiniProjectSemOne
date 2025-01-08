@@ -1,3 +1,14 @@
+#Upper case/lower case
+def validInput(message):
+    while True:
+        try:
+            value = int(input(message))
+            if value > 0:
+                return value
+            else:
+                print("Please enter a positive integer")
+        except ValueError:
+            print("Invalid input. Please enter a positive integer")
 def people(n):
     peo = []
     p1 = {}
@@ -16,19 +27,21 @@ def dataSheet(peo,p1):
 def expenses(peo):
     expSheet = {}
     expense_name = []
-    n1 = int(input('Enter the number of expenses: '))
+    n1 = validInput('Enter the number of expenses: ')
     if n1 <= 0:
         print("No expenses to process.")
         return expSheet, expense_name
 
     for i in range(n1):
         expname = input('Enter the name of the expense: ')
-        expamt = int(input('Enter the expense amount: '))
-        payer = input('Enter the payer\'s name: ')
+        expamt = validInput('Enter the expense amount: ')
+        while True:
+            payer = input('Enter the payer\'s name: ')
+            if payer in peo:
+                break
+            else:
+                print("Invalid payer name; retry")
         print('\n')
-        if payer not in peo:
-            print("Invalid payer name; retry")
-            continue
 
         expSheet[expname] = {'amount': expamt, 'payer': payer}
         expense_name.append(expname)
@@ -92,7 +105,7 @@ def final_bal(p1,peo):
                 done.add((other, person))
 
 try:
-    n = int(input('Enter the number of people: '))
+    n = validInput('Enter the number of people: ')
     if n <= 0:
         raise ValueError("Number of people must be a positive integer.")
 except ValueError as e:

@@ -10,8 +10,8 @@ def validInput(message):
             print("Invalid input. Please enter a positive integer")
 
 def people(n):
-    peo = []
     originalNames={}
+    peo = []
     p1 = {}
     for i in range(n):
         name = input('Enter name: ')
@@ -62,7 +62,7 @@ def split(peo,p1,expSheet,expense_name,originalNames):
         split_people=[]
         print('Splitting expense',i,' of amount %.2f'%expamt)
         print('Payer is ',payer,'\nWho should split this expense?')
-        split_opt=input('Enter \'all\' to split among everyone or press enter to split among specific people')
+        split_opt=input('Enter \'all\' to split among everyone (or) press enter to split among specific people: ').lower().strip()
 
         if split_opt=='all':
             split_people=peo[:]
@@ -70,7 +70,7 @@ def split(peo,p1,expSheet,expense_name,originalNames):
             split_people.remove(payer)
         else:
             while True:
-                person = input('Enter a person to split the expense with (Press enter to finish/move to next person)').lower()
+                person = input('Enter a person to split the expense with (Press enter to finish/move to next person): ').lower().strip()
                 if person.lower() == '':
                     print('\n')
                     break
@@ -110,11 +110,11 @@ def final_bal(p1,peo,originalNames):
 
 
 def save_to_file_user_input(peo, p1, expSheet, originalNames):
-    filepath = input('Enter the full path where the file should be saved (e.g., C:\\Users\\YourName\\Downloads): ').strip()
-    filename = input('Enter the name of the file (e.g., Expenses.txt): ').strip()
+    filepath = input('Enter the path of the folder where the file should be saved (e.g., C:\\Users\\YourName\\Downloads): ').strip()
+    filename = input('Enter the name of the file (e.g., Expenses): ').strip()
     if not filepath.endswith("\\"):
         filepath += "\\"
-    fullpath = filepath + filename
+    fullpath = filepath + filename +'.txt'
 
     try:
         with open(fullpath, 'w') as f:
@@ -157,6 +157,6 @@ if expense_name:
     p1=split(peo,p1,expSheet,expense_name,originalNames)
     final_bal(p1,peo,originalNames)
     c='!'
-    c=input('Do you want to save this data in a file? Press enter to save.')
+    c=input('Do you want to save this data in a file? Press enter to save (or) type \'no\' to exit. ').strip()
     if c=='':
         save_to_file_user_input(peo, p1, expSheet, originalNames)

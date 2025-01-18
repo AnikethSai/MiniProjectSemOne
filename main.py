@@ -44,8 +44,7 @@ def expenses(peo):
             else:
                 print("Invalid payer name; retry")
         print('\n')
-
-        expSheet[expname] = {'amount': expamt, 'payer': payer}
+        expSheet[expname] = {'amount': expamt, 'payer': payer, 'split_details':[]}
         expense_name.append(expname)
     print('\n')
     return expSheet,expense_name
@@ -69,47 +68,72 @@ def split(peo,p1,expSheet,expense_name,originalNames):
             part = expamt / len(split_people)
             split_people.remove(payer)
         else:
-            while True:
-                person = input('Enter a person to split the expense with (Press enter to finish/move to next person): ').lower().strip()
-                if person.lower() == '':
-                    print('\n')
-                    break
-                elif person not in peo:
-                    print(f"{person} is not in the list of people.")
-                elif person == payer:
-                    print(f"{person} is the payer and cannot split.")
-                elif person in split_people:
-                    print(f"{person} is already added.")
-                else:
-                    split_people.append(person)
+            def splitList():
+                while True:
+                    person = input(
+                        'Enter a person to split the expense with (Press enter to finish/move to next person): ').lower().strip()
+                    if person.lower() == '':
+                        # print('\n')
+                        break
+                    elif person not in peo:
+                        print(f"{person} is not in the list of people.")
+                    elif person == payer:
+                        print(f"{person} is the payer and cannot split.")
+                    elif person in split_people:
+                        print(f"{person} is already added.")
+                    else:
+                        split_people.append(person)
+                    if len(split_people) == len(peo) - 1:
+                        print('Everyone has been added.')
+                        break
+            splitList()
             part = expamt / (len(split_people) + 1)
-
         if not split_people:
-            print(f"No valid people to split the expense. Skipping this expense.")
-            continue
-
+            print('Retry:')
+            while not split_people:
+                splitList()
         for person in split_people:
             p1[payer][person] += part
             p1[person][payer] -= part
+            expSheet[i]['split_details'].append({'name':person,'amount':part})
             print(f"{originalNames[person]} owes {originalNames[payer]} {part:.2f}")
         print('\n')
-    print('\n')
     return p1
 def final_bal(p1,peo,originalNames):
-    print("\nFinal Balances:")
+    final_balances="\nFinal Balances:\n\n"
     done = set()
     for person in peo:
         for other in peo:
             if person!=other and (person,other) not in done:
                 if p1[person][other] > 0:
-                    print(originalNames[other], ' owes ', originalNames[person],' %.2f' %(p1[person][other]))
+                    final_balances+=f"{originalNames[other]} owes {originalNames[person]} %.2f\n" %(p1[person][other])
                 elif p1[other][person] > 0:
-                    print(originalNames[person],' owes ',originalNames[other],' %.2f'%(p1[other][person]))
+                    final_balances+=f"{originalNames[person]} owes {originalNames[other]} %.2f"%(p1[other][person])
                 done.add((person, other))
                 done.add((other, person))
+    return final_balances
 
+def expense_summary(expSheet,originalNames):
+    summary='\nExpense Summary:\n'
+    summary+= '\n'+ '-'*50 + '\n'
+    for exp, details in expSheet.items():
+        summary+=f'Expense: {exp}\n'
+        summary+=f"Amount: {details['amount']}\n"
+        summary+=f"Paid by: {originalNames[details['payer']]}\n"
 
-def save_to_file_user_input(peo, p1, expSheet, originalNames):
+        if len(details['split_details'])==len(originalNames)-1:
+            summary+='Split among: All\n'
+        else:
+            summary+='Split Among: '
+            split_names=[]
+            for split in details['split_details']:
+                split_names.append(originalNames[split['name']])
+            summary+=f'{originalNames[details['payer']]},'+','.join(split_names)
+        for split in details['split_details']:
+            summary+=f"    {originalNames[split['name']]} owes {originalNames[details['payer']]}: {split['amount']:.2f}"
+        summary+='\n'+"-" * 50 + '\n'
+    return summary
+def saveToFile(peo, p1, expSheet, originalNames):
     filepath = input('Enter the path of the folder where the file should be saved (e.g., C:\\Users\\YourName\\Downloads): ').strip()
     filename = input('Enter the name of the file (e.g., Expenses): ').strip()
     if not filepath.endswith("\\"):
@@ -117,26 +141,12 @@ def save_to_file_user_input(peo, p1, expSheet, originalNames):
     fullpath = filepath + filename +'.txt'
 
     try:
+        expense_details = expense_summary(expSheet, originalNames)
+        final_balances=final_bal(p1,peo,originalNames)
         with open(fullpath, 'w') as f:
-            f.write("People:\n")
-            for name in peo:
-                f.write(f"  {originalNames[name]} (equalized: {name})\n")
-
-            f.write("\nExpenses:\n")
-            for exp, details in expSheet.items():
-                f.write(f"  {exp}: {details['amount']} paid by {originalNames[details['payer']]}\n")
-
-            f.write("\nFinal Balances:\n")
-            done = set()
-            for person in peo:
-                for other in peo:
-                    if person != other and (person, other) not in done:
-                        if p1[person][other] > 0:
-                            f.write(f"  {originalNames[other]} owes {originalNames[person]}: {p1[person][other]:.2f}\n")
-                        elif p1[other][person] > 0:
-                            f.write(f"  {originalNames[person]} owes {originalNames[other]}: {p1[other][person]:.2f}\n")
-                        done.add((person, other))
-                        done.add((other, person))
+            f.write(expense_details)
+            f.write('\n')
+            f.write(final_balances)
         print(f"Data successfully saved to {fullpath}")
     except Exception as e:
         print(f"An error occurred while saving the file: {e}")
@@ -155,8 +165,9 @@ else:
     expSheet, expense_name = expenses(peo)
 if expense_name:
     p1=split(peo,p1,expSheet,expense_name,originalNames)
-    final_bal(p1,peo,originalNames)
+    print(expense_summary(expSheet, originalNames))
+    print(final_bal(p1, peo, originalNames))
     c='!'
     c=input('Do you want to save this data in a file? Press enter to save (or) type \'no\' to exit. ').strip()
     if c=='':
-        save_to_file_user_input(peo, p1, expSheet, originalNames)
+        saveToFile(peo, p1, expSheet, originalNames)

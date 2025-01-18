@@ -108,7 +108,7 @@ def final_bal(p1,peo,originalNames):
                 if p1[person][other] > 0:
                     final_balances+=f"{originalNames[other]} owes {originalNames[person]} %.2f\n" %(p1[person][other])
                 elif p1[other][person] > 0:
-                    final_balances+=f"{originalNames[person]} owes {originalNames[other]} %.2f"%(p1[other][person])
+                    final_balances+=f"{originalNames[person]} owes {originalNames[other]} %.2f\n"%(p1[other][person])
                 done.add((person, other))
                 done.add((other, person))
     return final_balances
@@ -128,9 +128,9 @@ def expense_summary(expSheet,originalNames):
             split_names=[]
             for split in details['split_details']:
                 split_names.append(originalNames[split['name']])
-            summary+=f'{originalNames[details['payer']]},'+','.join(split_names)
+            summary+=f'{originalNames[details['payer']]},'+','.join(split_names)+'\n'
         for split in details['split_details']:
-            summary+=f"    {originalNames[split['name']]} owes {originalNames[details['payer']]}: {split['amount']:.2f}"
+            summary+=f"    {originalNames[split['name']]} owes {originalNames[details['payer']]}: {split['amount']:.2f}\n"
         summary+='\n'+"-" * 50 + '\n'
     return summary
 def saveToFile(peo, p1, expSheet, originalNames):

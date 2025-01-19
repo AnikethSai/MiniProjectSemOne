@@ -134,7 +134,7 @@ def expense_summary(expSheet,originalNames):
         summary+='\n'+"-" * 50 + '\n'
     return summary
 def saveToFile(peo, p1, expSheet, originalNames):
-    filepath = input('Enter the path of the folder where the file should be saved (e.g., C:\\Users\\YourName\\Downloads): ').strip()
+    filepath = input('Enter the path of the folder where the file should be saved (e.g., C:\\Users\\YourName\\Downloads): ').strip().lstrip('\"').rstrip('\"')
     filename = input('Enter the name of the file (e.g., Expenses): ').strip()
     if not filepath.endswith("\\"):
         filepath += "\\"

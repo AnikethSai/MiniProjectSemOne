@@ -55,15 +55,19 @@ def print_expenses(expSheet):
         print(f"  {k}: {v}")
 
 def split(peo,p1,expSheet,expense_name,originalNames):
+    global split_opt
+    split_opt=''
     for i in expense_name:
         expamt = expSheet[i]['amount']
         payer = expSheet[i]['payer']
         split_people=[]
-        print('Splitting expense',i,' of amount %.2f'%expamt)
-        print('Payer is ',payer,'\nWho should split this expense?')
-        split_opt=input('Enter \'all\' to split among everyone (or) press enter to split among specific people: ').lower().strip()
+        if len(peo)!=2:
+            print('Splitting expense', i, ' of amount %.2f' % expamt)
+            print('Payer is ', payer, '\nWho should split this expense?')
+            split_opt = input(
+                'Enter \'all\' to split among everyone (or) press enter to split among specific people: ').lower().strip()
 
-        if split_opt=='all':
+        if split_opt=='all' or len(peo)==2:
             split_people=peo[:]
             part = expamt / len(split_people)
             split_people.remove(payer)
@@ -154,8 +158,8 @@ def saveToFile(peo, p1, expSheet, originalNames):
 
 try:
     n = validInput('Enter the number of people: ')
-    if n <= 0:
-        raise ValueError("Number of people must be a positive integer.")
+    if n <= 1:
+        raise ValueError("Number of people must be a positive integer greater than 1.")
 except ValueError as e:
     print(e)
     exit()
